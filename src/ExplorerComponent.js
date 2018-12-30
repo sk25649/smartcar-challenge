@@ -5,11 +5,22 @@ import axios from 'axios';
 import JSONPretty from 'react-json-pretty';
 import './ExplorerComponent.scss';
 
+const FormGroup = ({ type, value, label, onChange}) => {
+    return (
+        <div className="form-group">
+            <label>{label}</label>
+            <input 
+                type="text" 
+                value={value}
+                onChange={(event) => onChange(label, event)} 
+            />
+        </div>
+    );
+};
+
 class ExplorerComponent extends Component {
     state = {
-        email: '',
-        fullName: '',
-        phoneNumber: '',
+        formValues: {},
         response: null
     };
 
@@ -20,7 +31,7 @@ class ExplorerComponent extends Component {
         let response;
         switch (method) {
             case 'post': 
-                response = await axios.post(url, _.omit(this.state, 'response'));
+                response = await axios.post(url, this.state.formValues);
                 break;
             default: 
                 response = await axios.get(url);
@@ -31,43 +42,49 @@ class ExplorerComponent extends Component {
     };
 
     handleChange(key, event) {
-        this.setState({[key]: event.target.value});
+        this.setState({ 
+            formValues: {
+                ...this.state.formValues, 
+                [key]: event.target.value
+            }
+        });
+    }
+
+    renderFormGroups() {
+        const { body } = this.props;
+        return body.map(({ type, name }) => {
+            const value = this.state[name];
+            return (
+                <FormGroup
+                    id={name}
+                    type={type}
+                    label={name}
+                    onChange={this.handleChange}
+                    value={value}
+                />
+            );
+        });
+
     }
 
     renderForm() {
-        const { method } = this.props;
-        const { fullName, email, phoneNumber } = this.state;
-        if (method !== 'post') return null;
+        const { method, body } = this.props;
+        if (method !== 'post') {
+            return (
+                <button 
+                    type="submit" 
+                    onClick={(event) => this.handleSubmit(event)}
+                >
+                    Submit request 
+                </button>
+            );
+        };
 
         return (
             <div className="form-container">
                 <span>Body</span>
                 <form onSubmit={(event) => this.handleSubmit(event)}>
-                    <div className="form-group">
-                        <label>Email</label>
-                        <input 
-                            type="text" 
-                            value={email}
-                            onChange={(event) => this.handleChange('email', event)} 
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Full Name<span className="required">*</span></label>
-                        <input 
-                            type="text"
-                            placeholder="John Doe"
-                            value={fullName}
-                            onChange={(event) => this.handleChange('fullName', event)} 
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Phone</label>
-                        <input 
-                            type="number"
-                            value={phoneNumber}
-                            onChange={(event) => this.handleChange('phoneNumber', event)} 
-                        />
-                    </div>
+                    {this.renderFormGroups()}                   
                     <input type="submit" value="Send request" />
                 </form>
             </div>
@@ -80,7 +97,7 @@ class ExplorerComponent extends Component {
     }
 
     render() {
-        const { title, method, url, body } = this.props;
+        const { title, method, url } = this.props;
 
         return (
             <div className="container">
@@ -105,8 +122,8 @@ class ExplorerComponent extends Component {
 ExplorerComponent.propTypes = {
     title: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
-    method: PropTypes.string.isRequired
-    // body: PropTypes.arrayOf(PropTypes.Object)
+    method: PropTypes.string.isRequired,
+    body: PropTypes.arrayOf(PropTypes.Object)
 };
 
 export default ExplorerComponent;

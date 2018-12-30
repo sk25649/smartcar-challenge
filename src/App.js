@@ -23,7 +23,8 @@ const body = [
 ];
 
 const METHODS = {
-  POST: 'post'
+  POST: 'post',
+  GET: 'get'
 };
 
 class App extends Component {
@@ -31,10 +32,9 @@ class App extends Component {
     return (
       <div className="App">
         <ExplorerComponent
-            title="Add new user"
+            title="Get Users"
             url="https://jsonplaceholder.typicode.com/users"
-            method={METHODS.POST}
-            body={body}
+            method={METHODS.GET}
         />
       </div>
     );
