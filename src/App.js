@@ -1,25 +1,41 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import ExplorerComponent from './ExplorerComponent';
 import './App.css';
+
+const body = [
+    {
+      name: 'email',
+      type: 'email',
+      max: 24,
+      min: 3,
+    },
+    {
+      name: 'full-name',
+      type: 'text',
+      placeholder: 'John Doe',
+      required: true,
+    },
+    {
+      name: 'phone',
+      type: 'tel',
+      pattern: '[0-9]{3}-[0-9]{3}-[0-9]{4}',
+    }
+];
+
+const METHODS = {
+  POST: 'post'
+};
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <ExplorerComponent
+            title="Add new user"
+            url="https://jsonplaceholder.typicode.com/users"
+            method={METHODS.POST}
+            body={body}
+        />
       </div>
     );
   }
